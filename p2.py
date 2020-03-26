@@ -4,15 +4,16 @@ from scipy.integrate import solve_ivp
 # %%
 L_x = 20    # lane length
 L_y = 5     # lane width
-A = 5       # reasonable model parameter: A=0.2
-B = 5       # reasonable model parameter: B=2
-D = 5       # hardcore diameter
+A = 0.2       # reasonable model parameter: A=0.2
+B = 2       # reasonable model parameter: B=2
+D = 1       # hardcore diameter
 N = 20      # number of walkers
 Nr = 2      # pedestrians walking to the right
 Nl = 2      # pedestrians walking to the left
 tf = 20     # Final IVP Time
 ti = 0      # Initial IVP Time
 fstep = 1000 # Fluctuation step
+
 
 # %%
 def gaussian(theta):
@@ -23,7 +24,7 @@ class ped:
     # reasonable model parameters: tau=0.2, v0=1, m=1
     def __init__(self, drive_direction, theta, v_pref=1, tau=0.2, m=1):
         # Value for ivp
-        self.x_0 = np.asarray([np.random.uniform(0,L_x), np.random.uniform(0,L_y)])
+        self.x_0 = np.asarray([np.random.uniform(L_x/4,3*L_x/4), np.random.uniform(L_y/4,3*L_y/4)])
         # Value for ivp
         self.v_0 = np.asarray([np.random.uniform(-1,1),np.random.uniform(-1,1)])
         # Preferred walking speed
@@ -39,7 +40,8 @@ class ped:
         for i in np.linspace(ti, tf, fstep):
             # radial definition
             phi = np.random.uniform(0, 2*np.pi)
-            self.fluctuations.append(np.asarray([gaussian(theta)*np.sin(phi), gaussian(theta)*np.cos(phi)])/np.sqrt())
+            # normierung ..
+            self.fluctuations.append(np.asarray([gaussian(theta)*np.sin(phi), gaussian(theta)*np.cos(phi)])/np.sqrt(1/fstep))
 
     def interaction_force(self, x_own, x_other):
         """repulsive interaction zwischen selbst und übergebenem pedestrian"""
@@ -55,11 +57,14 @@ class ped:
 
     def boundary_force(self, x):
         """d distance to the closest boundary"""
-        d = min(x[1], L_y - x[1])
+        d = min(abs(x[1]), abs(L_y - x[1]))
         # Richtung der Kraft
         if x[1] < L_y/2:
-            return 1*A * B * (d - D/2)**(-B-1) * (np.asarray([0,d])) / np.abs(x[1])
+            # when ped in lower half of sim.box, forced upwards
+            # d must not < D/2 == hard wall potential
+            return 1*A * B * (d - D/2)**(-B-1) * (np.asarray([0,d])) / np.abs(d)
         elif x[1] > L_y/2:
+            # when ped in upper half of sim.box, forced downwards
             return -1 * A * B * (d - D/2)**(-B-1) * (np.asarray([0,d])) / np.abs(d)
         else:
             return 0
@@ -131,10 +136,13 @@ def ivp (ti, tf, all):
     solve_ivp(function_for_ivp, [ti, tf], initial_values_for_ivp(all))
 
 # %%
-Nl = 1
+Nl = 2
 Nr = 0
 all = make_pedestrians(Nl, Nr)
 solution = solve_ivp(function_for_ivp, [ti, tf], initial_values_for_ivp(all), method='LSODA')
+print(min(solution['y'][1]))
+print(max(solution['y'][1]))
+len(solution['y'][0])
 solution
 # %%
 solution['y'][2,0]
