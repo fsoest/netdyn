@@ -1,4 +1,4 @@
-# Nagel-Schreckberg-Modell
+# Nagel-Schreckenberg-Modell
 import numpy as np
 import matplotlib.pyplot as plt
 # %%
@@ -57,8 +57,8 @@ def car_logic(cars, p=0.2):
 v_max = 5    # Maximalgeschwindigkeit
 L = 100     # Straßenlänge
 T = 100     # Simulationszeit total
-N = 20       # Anzahl Autos
-p = 0.2      # Random decel
+N = 50       # Anzahl Autos
+p = 0      # Random decel
 
 # %%
 cars = []
