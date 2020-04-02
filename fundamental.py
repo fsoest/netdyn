@@ -119,9 +119,41 @@ R_A = 10
 data = []
 for i in range(10):
     for j in np.linspace(0, 1000, 201):
-        data.append(parameters(j, charging_speed=1, max_charge=10, patience=1, range_anxiety=3))
+        data.append(parameters(int(j), charging_speed=1, max_charge=10, patience=1, range_anxiety=3))
         print('Wiederholung {0}, N = {1}'.format(i, j))
 
 csv_data = pd.DataFrame(data,columns=['N', 'Speed', 'Max', 'Pat', 'R_A'])
 
 csv_data.to_csv('data.csv')
+
+# %%
+data2 = []
+for i in range(10):
+    for j in np.linspace(0, 300, 11):
+            for r_a in range(10):
+                data2.append(parameters(int(j), charging_speed=1, max_charge=10, patience=1, range_anxiety=r_a))
+                print('Wiederholung {0}, N = {1}, R_A={2}'.format(i, j, r_a))
+
+data_2 = pd.DataFrame(data2, columns=['N', 'L', 'Max', 'Pat', 'R_A'])
+data_2.to_csv('range_anxiety.csv')
+
+# %%
+data3 = []
+for i in range(10):
+    for j in np.linspace(0, 300, 11):
+            for r_a in range(10):
+                data3.append(parameters(int(j), charging_speed=1, max_charge=10, patience=r_a, range_anxiety=3))
+                print('Wiederholung {0}, N = {1}, Pat={2}'.format(i, j, r_a))
+
+data_3 = pd.DataFrame(data3, columns=['N', 'L', 'Max', 'Pat', 'R_A'])
+data_3.to_csv('patience.csv')
+# %%
+data_total = []
+for i in range(10):
+    for j in np.linspace(0, 360, 13):
+            for r_a in range(10):
+                for pat in range(10):
+                    data_total.append(parameters(int(j), charging_speed=1, max_charge=10, patience=r_a, range_anxiety=pat))
+                    print('Wiederholung {0}, N = {1}, Pat={2}'.format(i, j, pat))
+data_total = pd.DataFrame(data_total, columns=['N', 'L', 'Max', 'Pat', 'R_A'])
+data_total.to_csv('total.csv')

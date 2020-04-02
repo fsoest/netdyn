@@ -1,6 +1,7 @@
 import simpy
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 #%%
 
 class PosEnvironment(simpy.Environment):
@@ -100,7 +101,7 @@ def parameters(N, charging_speed, max_charge, patience, range_anxiety, plot=Fals
     i = 0
     for x0 in sample:
         charge = np.random.randint(0, max_charge)
-        cars.append(Car(env, 0, 10, patience, range_anxiety, max_charge, CS, i))
+        cars.append(Car(env, x0, charge, patience, range_anxiety, max_charge, CS, i))
         i += 1
     data = []
     q_data = []
@@ -125,41 +126,30 @@ def parameters(N, charging_speed, max_charge, patience, range_anxiety, plot=Fals
             plt.xlabel('Zeit')
             plt.ylabel('Anzahl in Schlange')
 
-    return [N, L, env.x_gesamt/(L*T), patience, range_anxiety]
-    #return q_data
-#%%
-"""Fundamental Diagram"""
+    return [N/L, env.x_gesamt/(L*T), patience, range_anxiety]
 
-
-
-
-#%%
-# x_0 = 0
-# charge = 10
-# patience = 3
-# range_anxiety = 4
-# max_charge = 10
+# %%
 T = 5000
-seed = 13
+seed = 43
+N = 200
+charging_speed = 1
+r_a = 7
+max_charge = 10
+patience = 1
+# %%
+# Max_charge 10, r_a = 4
 np.random.seed(seed)
+parameters(N, charging_speed, max_charge, patience, r_a, plot=True)
+# %%
+# Max charge 6, r_a=0
+np.random.seed(seed)
+parameters(N, charging_speed, max_charge-r_a, patience, 0, plot=True)
 
 # %%
-# Free Flow Scenario:
-np.random.seed(seed)
-parameters(N=210, charging_speed=1, max_charge=10, patience=1, range_anxiety=3, plot=True)
-np.random.seed(seed)
-parameters(N=50, charging_speed=1, max_charge=10, patience=1, range_anxiety=3, plot2=True)
-# Capturing conjestion scenario
-parameters(N=210, charging_speed=1, max_charge=10, patience=1, range_anxiety=3, plot=True)
-# Slow congestion scenario
-parameters(N=210, charging_speed=1, max_charge=10, patience=1, range_anxiety=3, plot=True)
-# Complete overload Scenario
-parameters(N=210, charging_speed=1, max_charge=10, patience=1, range_anxiety=3, plot=True)
-# %%
-q = parameters(N=400, charging_speed=1, max_charge=10, patience=1, range_anxiety=3, plot=True)
-L=100
-sum = []
-for i in range(L):
-    sum.append(np.matrix(q).T[i].sum()/T)
-# %%
-plt.plot(range(len(sum)), sum)
+data_with_ra = []
+for i in range(10):
+    for n in np.linspace(0, 350, 36):
+        np.random.seed(i)
+        data_with_ra.append(parameters(int(n), charging_speed, max_charge, patience, r_a))
+        print(i, n)
+pd.DataFrame(data_with_ra, columns=['N/L', 'Flow', 'Pat', 'r_a']).to_csv('data_with_ra_7.csv')

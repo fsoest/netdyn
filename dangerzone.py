@@ -88,7 +88,7 @@ def collect_x_data(env, x_data, q_data, T, cars, CS):
         q_data.append(zeitpunkt_q)
         yield env.timeout(1)
 
-def parameters(N, charging_speed, max_charge, patience, range_anxiety, plot=False, plot2=False, L=100):
+def parameters(N, charging_speed, max_charge, patience, range_anxiety, plot=False, L=100):
     env = PosEnvironment()
     CS = []
     for i in range(L):
@@ -100,7 +100,7 @@ def parameters(N, charging_speed, max_charge, patience, range_anxiety, plot=Fals
     i = 0
     for x0 in sample:
         charge = np.random.randint(0, max_charge)
-        cars.append(Car(env, 0, 10, patience, range_anxiety, max_charge, CS, i))
+        cars.append(Car(env, x0, charge, patience, range_anxiety, max_charge, CS, i))
         i += 1
     data = []
     q_data = []
@@ -110,56 +110,19 @@ def parameters(N, charging_speed, max_charge, patience, range_anxiety, plot=Fals
     if plot==True:
         #plt.figure(dpi=420)
         for i in range(len(data[0])):
-            plt.scatter(range(len(data)), [data[j][i] for j in range(len(data))], marker='.', c='black', alpha=0.002)
-            #plt.xlim(3000,4000)
+            plt.scatter(range(len(data)), [data[j][i] for j in range(len(data))], marker='.', c='black', alpha=0.01*200/N)
             plt.xlabel('Zeit')
             plt.ylabel('Ort')
             plt.title('N={0}, Charging speed = {1}, Max charge = {2}, Patience = {3}, Range anxiety = {4}'.format(N, charging_speed, max_charge, patience, range_anxiety))
-        plt.legend(title='Flow={0}'.format(env.x_gesamt/(L*T)))
-        plt.plot(np.linspace(3500,3700, 1000), [i/2 for i in np.linspace(0,200,1000)], c='red')
-        plt.plot(np.linspace(3000,3200, 1000), [i/2 for i in np.linspace(0,200,1000)], c='red')
-
-    if plot2==True:
-        for i in range(len(q_data[0])):
-            plt.scatter(range(len(q_data)), [q_data[j][i] for j in range(len(data))], marker='.', c='black', alpha=0.01)
-            plt.xlabel('Zeit')
-            plt.ylabel('Anzahl in Schlange')
-
-    return [N, L, env.x_gesamt/(L*T), patience, range_anxiety]
+    return [N/L, env.x_gesamt/(L*T), patience, range_anxiety]
     #return q_data
-#%%
-"""Fundamental Diagram"""
 
-
-
-
-#%%
-# x_0 = 0
-# charge = 10
-# patience = 3
-# range_anxiety = 4
-# max_charge = 10
+# %%
 T = 5000
-seed = 13
-np.random.seed(seed)
-
-# %%
-# Free Flow Scenario:
-np.random.seed(seed)
-parameters(N=210, charging_speed=1, max_charge=10, patience=1, range_anxiety=3, plot=True)
-np.random.seed(seed)
-parameters(N=50, charging_speed=1, max_charge=10, patience=1, range_anxiety=3, plot2=True)
-# Capturing conjestion scenario
-parameters(N=210, charging_speed=1, max_charge=10, patience=1, range_anxiety=3, plot=True)
-# Slow congestion scenario
-parameters(N=210, charging_speed=1, max_charge=10, patience=1, range_anxiety=3, plot=True)
-# Complete overload Scenario
-parameters(N=210, charging_speed=1, max_charge=10, patience=1, range_anxiety=3, plot=True)
-# %%
-q = parameters(N=400, charging_speed=1, max_charge=10, patience=1, range_anxiety=3, plot=True)
-L=100
-sum = []
-for i in range(L):
-    sum.append(np.matrix(q).T[i].sum()/T)
-# %%
-plt.plot(range(len(sum)), sum)
+danger_zone = []
+for i in range(10):
+    for n in np.linspace(180,230,51):
+        danger_zone.append(parameters(int(n), 1, 10, 1, 7))
+        print(i, n)
+import pandas as pd
+pd.DataFrame(danger_zone, columns=['N/L', 'Flow', 'Pat', 'R_a']).to_csv('dangerzone_ra7.csv')
