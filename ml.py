@@ -97,11 +97,14 @@ def parameters(N, charging_speed, max_charge, patience, range_anxiety, L=100):
     cars = []
     name = range(N)
     sample = np.random.choice(L, N, replace=True)
+    initial_conds = []
     #charge = max_charge
     i = 0
     for x0 in sample:
         charge = np.random.randint(0, max_charge)
         cars.append(Car(env, x0, charge, patience, range_anxiety, max_charge, CS, i))
+        initial_conds.append(x0/L)
+        initial_conds.append(charge/max_charge)
         i += 1
     data = []
     q_data = []
@@ -109,6 +112,16 @@ def parameters(N, charging_speed, max_charge, patience, range_anxiety, L=100):
 
     env.run(coll)
 
-    return [N, L, env.x_gesamt/(L*T), patience, range_anxiety]
-    #return q_data
+    # return [N, L, env.x_gesamt/(L*T), patience, range_anxiety]
+    return initial_conds, env.x_gesamt/(L*T)
+    # return q_data
 # %%
+T = 5000
+# %%
+X = []
+Y = []
+for i in range(1000):
+    x, y = parameters(210, 1, 10, 1, 3)
+    print(i)
+    X.append(x)
+    Y.append(y)
