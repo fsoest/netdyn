@@ -125,3 +125,13 @@ for i in range(1000):
     print(i)
     X.append(x)
     Y.append(y)
+# %%
+X
+import pandas as pd
+pd.DataFrame(X).to_csv('X1.csv')
+pd.read_csv('X1.csv')
+pd.DataFrame(Y).to_csv('Y1.csv')
+pd.read_csv('Y1.csv')
+total = pd.read_csv('X1.csv')
+total['Y'] = pd.DataFrame(Y)
+total.to_csv('total1.csv')
