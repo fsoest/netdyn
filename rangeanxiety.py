@@ -9,7 +9,7 @@ class PosEnvironment(simpy.Environment):
         super().__init__()
 
     """Klasse die gleichzeitig timeout durchführt und den Ort updated"""
-    def time_and_place(self, car, duration, id, L=100):
+    def time_and_place(self, car, duration, id, L=101):
         if id == 'go':
             car.position = (car.position + duration) % L
             car.charge -= duration
@@ -100,7 +100,7 @@ def parameters(N, charging_speed, max_charge, patience, range_anxiety, plot=Fals
     i = 0
     for x0 in sample:
         charge = np.random.randint(0, max_charge)
-        cars.append(Car(env, 0, 10, patience, range_anxiety, max_charge, CS, i))
+        cars.append(Car(env, x0, charge, patience, range_anxiety, max_charge, CS, i))
         i += 1
     data = []
     q_data = []
@@ -110,11 +110,11 @@ def parameters(N, charging_speed, max_charge, patience, range_anxiety, plot=Fals
     if plot==True:
         #plt.figure(dpi=420)
         for i in range(len(data[0])):
-            plt.scatter(range(len(data)), [data[j][i] for j in range(len(data))], marker='.', c='black', alpha=0.002)
-            #plt.xlim(3000,4000)
+            plt.scatter(range(len(data)), [data[j][i] for j in range(len(data))], marker='.', c='black', alpha=0.01)
+            plt.xlim(3000,4000)
             plt.xlabel('Zeit')
             plt.ylabel('Ort')
-            plt.title('N={0}, Charging speed = {1}, Max charge = {2}, Patience = {3}, Range anxiety = {4}'.format(N, charging_speed, max_charge, patience, range_anxiety))
+            plt.title('N={0}, Charging speed = {1}, Max charge = {2}, \n Patience = {3}, Range anxiety = {4}'.format(N, charging_speed, max_charge, patience, range_anxiety))
         plt.legend(title='Flow={0}'.format(env.x_gesamt/(L*T)))
         plt.plot(np.linspace(3500,3700, 1000), [i/2 for i in np.linspace(0,200,1000)], c='red')
         plt.plot(np.linspace(3000,3200, 1000), [i/2 for i in np.linspace(0,200,1000)], c='red')
@@ -140,21 +140,30 @@ def parameters(N, charging_speed, max_charge, patience, range_anxiety, plot=Fals
 # range_anxiety = 4
 # max_charge = 10
 T = 5000
-seed = 13
-np.random.seed(seed)
 
 # %%
 # Free Flow Scenario:
-np.random.seed(seed)
-parameters(N=210, charging_speed=1, max_charge=10, patience=1, range_anxiety=3, plot=True)
-np.random.seed(seed)
-parameters(N=50, charging_speed=1, max_charge=10, patience=1, range_anxiety=3, plot2=True)
+
+parameters(N=50, charging_speed=1, max_charge=10, patience=1, range_anxiety=3, plot=True)
+plt.savefig('images/freeflow.png', dpi=420)
+# %%
+# Capturing congestion
+parameters(N=180, charging_speed=1, max_charge=3, patience=1, range_anxiety=2, plot=True)
+plt.savefig('images/capturing_congestion.png', dpi=420)
+# %%
 # Capturing conjestion scenario
-parameters(N=210, charging_speed=1, max_charge=10, patience=1, range_anxiety=3, plot=True)
-# Slow congestion scenario
-parameters(N=210, charging_speed=1, max_charge=10, patience=1, range_anxiety=3, plot=True)
+parameters(N=250, charging_speed=1, max_charge=10, patience=1, range_anxiety=2, plot=True)
+plt.savefig('images/slow_congestion.png', dpi=420)
+# %%
+# Complete overload scenario
+
+parameters(N=400, charging_speed=1, max_charge=10, patience=1, range_anxiety=3, plot=True)
+plt.savefig('images/complete_overload.png', dpi=420)
+# %%
 # Complete overload Scenario
-parameters(N=210, charging_speed=1, max_charge=10, patience=1, range_anxiety=3, plot=True)
+np.random.seed(10)
+T=10000
+parameters(N=210, charging_speed=1, max_charge=10, patience=1, range_anxiety=3)
 # %%
 q = parameters(N=400, charging_speed=1, max_charge=10, patience=1, range_anxiety=3, plot=True)
 L=100

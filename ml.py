@@ -10,7 +10,7 @@ class PosEnvironment(simpy.Environment):
         super().__init__()
 
     """Klasse die gleichzeitig timeout durchführt und den Ort updated"""
-    def time_and_place(self, car, duration, id, L=100):
+    def time_and_place(self, car, duration, id, L=47):
         if id == 'go':
             car.position = (car.position + duration) % L
             car.charge -= duration
@@ -89,7 +89,7 @@ def collect_x_data(env, x_data, q_data, T, cars, CS):
         q_data.append(zeitpunkt_q)
         yield env.timeout(1)
 
-def parameters(N, charging_speed, max_charge, patience, range_anxiety, L=100):
+def parameters(N, charging_speed, max_charge, patience, range_anxiety, L=47):
     env = PosEnvironment()
     CS = []
     for i in range(L):
@@ -120,11 +120,16 @@ T = 5000
 # %%
 X = []
 Y = []
-for i in range(1000):
-    x, y = parameters(210, 1, 10, 1, 3)
+for i in range(500):
+    x, y = parameters(102, 1, 10, 1, 3)
     print(i)
     X.append(x)
     Y.append(y)
+# %%
+import matplotlib.pyplot as plt
+plt.scatter(range(len(Y)), Y)
+plt.savefig('images/103.png', dpi=420)
+
 # %%
 X
 import pandas as pd
@@ -132,6 +137,7 @@ pd.DataFrame(X).to_csv('X1.csv')
 pd.read_csv('X1.csv')
 pd.DataFrame(Y).to_csv('Y1.csv')
 pd.read_csv('Y1.csv')
-total = pd.read_csv('X1.csv')
+total = pd.DataFrame(X)
 total['Y'] = pd.DataFrame(Y)
 total.to_csv('total1.csv')
+total
