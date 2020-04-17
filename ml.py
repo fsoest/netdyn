@@ -141,3 +141,19 @@ total = pd.DataFrame(X)
 total['Y'] = pd.DataFrame(Y)
 total.to_csv('total1.csv')
 total
+
+# %%
+from sklearn.mixture import GaussianMixture
+data = pd.read_csv('dangerzone.csv', index_col=0)
+cluster = GaussianMixture(n_components=5)
+clusters = cluster.fit_predict(data.drop(columns=['Pat', 'R_a']))
+
+plt.scatter(data['N/L'], data['Flow'], c=clusters)
+
+# %%
+from sklearn.cluster import SpectralClustering
+data = pd.read_csv('dangerzone.csv', index_col=0)
+cluster = SpectralClustering(4)
+clusters = cluster.fit_predict(data.drop(columns=['Pat', 'R_a']))
+
+plt.scatter(data['N/L'], data['Flow'], c=clusters)

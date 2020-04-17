@@ -130,10 +130,10 @@ def parameters(N, charging_speed, max_charge, patience, range_anxiety, plot=Fals
 
 # %%
 T = 5000
-seed = 43
+# seed = 43
 N = 200
 charging_speed = 1
-r_a = 7
+r_a = 9
 max_charge = 10
 patience = 1
 # %%
@@ -146,10 +146,10 @@ np.random.seed(seed)
 parameters(N, charging_speed, max_charge-r_a, patience, 0, plot=True)
 
 # %%
-data_with_ra = []
+data_without_ra = []
 for i in range(10):
     for n in np.linspace(0, 350, 36):
         np.random.seed(i)
-        data_with_ra.append(parameters(int(n), charging_speed, max_charge, patience, r_a))
+        data_without_ra.append(parameters(int(n), charging_speed, 10, patience, 0))
         print(i, n)
-pd.DataFrame(data_with_ra, columns=['N/L', 'Flow', 'Pat', 'r_a']).to_csv('data_with_ra_7.csv')
+pd.DataFrame(data_without_ra, columns=['N/L', 'Flow', 'Pat', 'r_a']).to_csv('data_without_ra_10.csv')

@@ -1,3 +1,4 @@
+
 import simpy
 import matplotlib.pyplot as plt
 import numpy as np
@@ -154,14 +155,15 @@ def parameters(N, charging_speed, max_charge, patience, range_anxiety, plot=Fals
     #speed= (stau[-1,1]-stau[0,1])/(stau[-1,0]-stau[0,0])
     if plot==True:
         for i in range(len(data[0])):
-            plt.scatter(range(len(data)), [data[j][i] for j in range(len(data))], marker='.', c='black', alpha=0.01*200/N)
+            plt.scatter(range(len(data)), [data[j][i] for j in range(len(data))], marker='.', c='black', alpha=0.002)
 
-            plt.xlim(3000,4000)
+            # plt.xlim(3000,4000)
             plt.xlabel('Zeit')
             plt.ylabel('Ort')
-            plt.title('N={0}, Charging speed = {1}, Max charge = {2}, Patience = {3}, Range anxiety = {4}'.format(N, charging_speed, max_charge, patience, range_anxiety))
-        plt.plot(stau[:,0], stau[:,1], c='red')
-        plt.plot(np.linspace(int(- b /a) ,int ((100-b)/a), 1000), [a*i+b for i in np.linspace(int(- b /a) ,int ((100-b)/a), 1000)], c = 'green')
+            plt.title('N={0}, Charging speed = {1}, Max charge = {2}, \n Patience = {3}, Range anxiety = {4}'.format(N, charging_speed, max_charge, patience, range_anxiety))
+        plt.legend(title='Flow={0}'.format(env.x_gesamt/(L*T)))
+        # plt.plot(stau[:,0], stau[:,1], c='red')
+        # plt.plot(np.linspace(int(- b /a) ,int ((100-b)/a), 1000), [a*i+b for i in np.linspace(int(- b /a) ,int ((100-b)/a), 1000)], c = 'green')
         plt.plot(np.linspace(3500,3700, 1000), [i/2 for i in np.linspace(0,200,1000)], c='red')
         plt.plot(np.linspace(3000,3200, 1000), [i/2 for i in np.linspace(0,200,1000)], c='red')
 
@@ -180,20 +182,20 @@ def parameters(N, charging_speed, max_charge, patience, range_anxiety, plot=Fals
 # %%
 
 
-
+# %%
 T = 5000
 #seed = 1
-#np.random.seed(seed)
-q = parameters(N=210, charging_speed=1, max_charge=10, patience=1, range_anxiety=3, plot=True, plot2=False, plot3=False)
-# %%
+np.random.seed(10)
+q = parameters(N=210, charging_speed=1, max_charge=10, patience=1, range_anxiety=9, plot=True, plot2=False, plot3=False)
+# plt.savefig('critical2.png', dpi=420)
 
+# %%
 data_with_speed = []
 for i in range(10):
-    for n in np.linspace(10, 350, 35):
+    for n in np.linspace(180,230,51):
         data_with_speed.append(parameters(int(n), 1, 10, 1, 3))
-        print(i, n)
-pd.DataFrame(data_with_speed, columns=['N', 'L', 'Flow', 'Pat', 'r_a', 'speed']).to_csv('data_with_speed.csv')
-
+        print(i)
+pd.DataFrame(data_with_speed, columns=['N', 'L', 'Flow', 'Pat', 'r_a', 'speed']).to_csv('data_with_speed_alln.csv')
 # %%
 #np.random.seed(seed)
 #parameters(N=210, charging_speed=1, max_charge=10, patience=1, range_anxiety=3, plot=True)

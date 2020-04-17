@@ -126,3 +126,7 @@ for i in range(10):
         print(i, n)
 import pandas as pd
 pd.DataFrame(danger_zone, columns=['N/L', 'Flow', 'Pat', 'R_a']).to_csv('dangerzone_ra7.csv')
+
+# %%
+import numpy as np
+np.linspace(180, 230, 51)
